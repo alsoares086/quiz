@@ -21,6 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'pontuacao',  // New 'pontuacao' field (score)
+        'avatar',     // New 'avatar' field
+        'data_criacao', // New 'data_criacao' field (creation date)
     ];
 
     /**
@@ -43,6 +46,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'data_criacao' => 'datetime', // Cast 'data_criacao' as datetime
         ];
     }
 }
+
