@@ -1,7 +1,7 @@
 <x-guest-layout>
     @section('title', 'Reset')
     <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('Esqueceu a senha? Informe seu email para enviarmos um link e redefiní-la') }}
+        {{ __('Esqueceu a senha? Informe seu email que enviaremos um link para resetar.') }}
     </div>
 
     <!-- Session Status -->
