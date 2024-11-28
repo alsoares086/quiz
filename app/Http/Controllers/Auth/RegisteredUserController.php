@@ -31,26 +31,20 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-    
-        $avatars = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'];
-        $randomAvatar = '/images/' . $avatars[array_rand($avatars)];
-    
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'pontuacao' => 0,
-            'avatar' => $randomAvatar,
         ]);
-    
+
         event(new Registered($user));
-    
+
         Auth::login($user);
-    
+
         return redirect(route('dashboard', absolute: false));
     }
 }
-

@@ -12,16 +12,10 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans], // Fonte personalizada
-            },
-            colors: {
-                lightBlue: '#A0D8F1', // Azul claro para o fundo
-                softGreen: '#A7E9A6', // Verde suave para highlights
-                darkGray: '#333333', // Texto em cinza escuro para contraste
-                white: '#ffffff', // Branco para elementos
+                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
         },
     },
 
-    plugins: [forms], // Para estilizar formulários
+    plugins: [forms],
 };

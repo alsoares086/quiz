@@ -10,27 +10,64 @@ class QuizController extends Controller
 {
     public function index()
     {
-        // Fazendo a requisição à API para pegar perguntas de TI
-        $response = Http::get('https://opentdb.com/api.php', [
-            'amount' => 10,       // Número de perguntas
-            'category' => 18,     // Categoria de TI
-            'difficulty' => 'medium', // Dificuldade média
-            'type' => 'multiple', // Tipo de pergunta (múltipla escolha)
-        ]);
+            session()->forget('questions');
+            session()->forget('current_question_index');
+            session()->forget('result');
+   
+        if (!session()->has('questions')) {
+    
+            $response = Http::get('https://opentdb.com/api.php', [
+                'amount' => 10,    
+                'category' => 18,
+                'difficulty' => 'medium', 
+                'type' => 'multiple', 
+            ]);
 
-        $questions = collect($response->json()['results']); // Pegando os resultados da API
+          
+            session(['questions' => collect($response->json()['results'])]);
+            session(['current_question_index' => 0]); 
+        }
 
-        return view('quiz.index', ['questions' => $questions]);
+   
+        $questions = session('questions');
+        $currentIndex = session('current_question_index', 0);
+
+   
+        if ($currentIndex >= $questions->count()) {
+            return view('quiz.finished'); 
+        }
+
+        $currentQuestion = $questions[$currentIndex];
+
+        return view('quiz.index', ['question' => $currentQuestion]);
     }
 
     public function answer(Request $request)
     {
-        // Verifica a resposta do usuário
         $correct = $request->answer == $request->correct_answer;
-
-        // Redireciona de volta com uma mensagem de resultado
-        session()->flash('result', $correct ? 'Correto!' : 'Errado!');
-        
-        return redirect()->route('quiz.index');
+    
+        session()->put('result', $correct ? 'Correto!' : 'Errado!');
+    
+        $nextQuestionIndex = session('current_question_index') + 1;
+        session(['current_question_index' => $nextQuestionIndex]);
+    
+        $questions = session('questions');
+    
+        if ($nextQuestionIndex >= $questions->count()) {
+            return response()->json([
+                'result' => session('result'),
+                'next_question' => null,
+            ]);
+        }
+    
+        $currentQuestion = $questions[$nextQuestionIndex];
+    
+        $questionHtml = view('quiz.partials.question', ['question' => $currentQuestion])->render();
+    
+        return response()->json([
+            'result' => session('result'),
+            'next_question' => $questionHtml,
+        ]);
     }
+    
 }
