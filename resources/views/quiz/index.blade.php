@@ -14,68 +14,43 @@
                     @endif
                 </div>
 
-                <!-- Adicionando o id "question-container" para o lugar onde a próxima pergunta será inserida -->
                 <div id="question-container">
                     @if($question)
-                        <div class="question">
-                            <h3 class="text-2xl font-semibold">{{ $question['question'] }}</h3>
-
-                            <form id="quizForm" action="{{ route('quiz.answer') }}" method="POST">
-                                @csrf
-                                @foreach (array_merge([$question['correct_answer']], $question['incorrect_answers']) as $option)
-                                    <div>
-                                        <label>
-                                            <input type="radio" name="answer" value="{{ $option }}">
-                                            {{ $option }}
-                                        </label>
-                                    </div>
-                                @endforeach
-
-                                <input type="hidden" name="correct_answer" value="{{ $question['correct_answer'] }}">
-                                <button type="submit" class="mt-4 bg-lightBlue text-white px-4 py-2 rounded">Responder</button>
-                            </form>
-                        </div>
+                        @include('quiz.partials.question', ['question' => $question])
                     @else
-                        <div>
-                            <h3 class="text-xl font-semibold text-lightBlue mb-4">Quiz Finalizado!</h3>
-                        </div>
+                        <h3 class="text-xl font-semibold text-lightBlue mb-4">Quiz Finalizado!</h3>
                     @endif
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- Importando o jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <script>
         $(document).ready(function() {
-            // Função que será chamada ao enviar a resposta do quiz via AJAX
             $('#quizForm').submit(function(e) {
                 e.preventDefault(); // Impede o envio padrão do formulário
 
-                // Envia o formulário com os dados via AJAX
                 $.ajax({
-                    url: $(this).attr('action'), // A URL do formulário (deve ser a rota do controlador)
+                    url: $(this).attr('action'),
                     method: 'POST',
-                    data: $(this).serialize(), // Serializa os dados do formulário
+                    data: $(this).serialize(),
                     success: function(response) {
-                        // Exibe o resultado
-                        $('#resultMessage').text(response.result); // Atualiza o resultado (correto/errado)
+                        $('#resultMessage').text(response.result);
 
-                        // Verifica se existe uma próxima pergunta
                         if (response.next_question) {
-                            // Substitui o conteúdo da pergunta atual pela próxima pergunta
                             $('#question-container').html(response.next_question);
+                            $('#quizForm')[0].reset();
                         } else {
-                            // Caso não haja mais perguntas, exibe uma mensagem de fim de quiz
                             $('#question-container').html('<h3>Quiz Finalizado!</h3>');
                         }
                     },
-                    error: function() {
-                        // Em caso de erro, exibe uma mensagem de erro
-                        $('#resultMessage').text('Erro ao processar a resposta. Tente novamente.');
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('Erro:', textStatus, errorThrown); // Log no console
+
+                        $('#resultMessage').html(
+                            'Erro ao processar a resposta. Detalhes: ' + jqXHR.responseText
+                        );
                     }
                 });
             });
