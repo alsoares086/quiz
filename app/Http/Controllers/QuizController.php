@@ -2,33 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Question;
+use App\Services\QuizService;
 use Illuminate\Http\Request;
 
 class QuizController extends Controller
 {
+    protected $quizService;
+
+    public function __construct(QuizService $quizService)
+    {
+        $this->quizService = $quizService;
+    }
+
     public function index()
     {
-        session()->forget('result');
+        $currentQuestion = $this->quizService->initializeQuiz();
 
-        if (!session()->has('questions')) {
-            $questions = Question::with('answers')
-                ->inRandomOrder()
-                ->limit(10)
-                ->get();
-
-            session(['questions' => $questions]);
-            session(['current_question_index' => 0]);
+        if (!$currentQuestion) {
+            return view('quiz.result');
         }
-
-        $questions = session('questions');
-        $currentIndex = session('current_question_index', 0);
-
-        if ($currentIndex >= $questions->count()) {
-            return view('quiz.finished');
-        }
-
-        $currentQuestion = $questions[$currentIndex];
 
         return view('quiz.index', ['question' => $currentQuestion]);
     }
@@ -39,43 +31,24 @@ class QuizController extends Controller
             'answer' => 'required|exists:answers,id',
             'question_id' => 'required|exists:questions,id'
         ]);
-    
-        $questions = session('questions', []);
-        $currentIndex = session('current_question_index', 0);
-    
-        // Verificar se o índice atual está dentro dos limites
-        if ($currentIndex >= count($questions)) {
-            return response()->json([
-                'result' => 'Quiz Finalizado!',
-                'next_question' => null,
-            ]);
+
+        $result = $this->quizService->processAnswer($request->question_id, $request->answer);
+
+        if (!$result['next_question']) {
+            return response()->json($result);
         }
-    
-        $question = $questions[$currentIndex];
-        $correctAnswer = $question->answers()->where('is_correct', true)->first();
-    
-        // Verificar se a resposta está correta
-        $isCorrect = $request->answer == $correctAnswer->id;
-        session()->put('result', $isCorrect ? 'Correto!' : 'Errado!');
-    
-        // Incrementar o índice da pergunta atual
-        $nextQuestionIndex = $currentIndex + 1;
-        session(['current_question_index' => $nextQuestionIndex]);
-    
-        if ($nextQuestionIndex >= count($questions)) {
-            return response()->json([
-                'result' => session('result'),
-                'next_question' => null,
-            ]);
-        }
-    
-        // Próxima pergunta
-        $nextQuestion = $questions[$nextQuestionIndex];
-        $nextQuestionHtml = view('quiz.partials.question', ['question' => $nextQuestion])->render();
-    
-        return response()->json([
-            'result' => session('result'),
-            'next_question' => $nextQuestionHtml,
-        ]);
+
+        $nextQuestionHtml = view('quiz.partials.question', ['question' => $result['next_question']])->render();
+        $result['next_question'] = $nextQuestionHtml;
+
+        return response()->json($result);
     }
+
+    public function result()
+        {
+
+            $result = session('result');
+
+            return view('quiz.result', compact('result'));
+        }
 }

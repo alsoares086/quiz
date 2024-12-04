@@ -28,7 +28,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#quizForm').submit(function(e) {
+            $(document).on('submit', '#quizForm', function(e) {
                 e.preventDefault(); // Impede o envio padrão do formulário
 
                 $.ajax({
@@ -36,13 +36,15 @@
                     method: 'POST',
                     data: $(this).serialize(),
                     success: function(response) {
-                        $('#resultMessage').text(response.result);
-
+                        if (response.result) {
+                            $('#resultMessage').text(response.result); // Exibe o resultado da resposta
+                        }
                         if (response.next_question) {
-                            $('#question-container').html(response.next_question);
+                                  $('#question-container').html(response.next_question);
                             $('#quizForm')[0].reset();
                         } else {
-                            $('#question-container').html('<h3>Quiz Finalizado!</h3>');
+
+                            window.location.href = '{{ route("quiz.result") }}'; 
                         }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
