@@ -10,10 +10,9 @@ class Question extends Model
     use HasFactory;
 
     protected $fillable = [
-        'question', // Adicione outros campos que você tenha na tabela questions
+        'question', 
     ];
 
-    // Relacionamento com a tabela 'answers'
     public function answers()
     {
         return $this->hasMany(Answer::class);

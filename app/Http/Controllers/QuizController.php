@@ -45,10 +45,9 @@ class QuizController extends Controller
     }
 
     public function result()
-        {
+    {
+        $result = session('result');
 
-            $result = session('result');
-
-            return view('quiz.result', compact('result'));
-        }
+        return view('quiz.result', compact('result'));
+    }
 }

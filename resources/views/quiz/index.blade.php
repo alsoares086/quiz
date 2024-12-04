@@ -4,7 +4,6 @@
             {{ __('O que você sabe?') }}
         </h2>
     </x-slot>
-
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="p-6 text-gray-900 dark:text-gray-100 bg-lightBlue dark:bg-darkGray rounded-lg shadow-sm">
@@ -13,7 +12,6 @@
                         {{ session('result') }}
                     @endif
                 </div>
-
                 <div id="question-container">
                     @if($question)
                         @include('quiz.partials.question', ['question' => $question])
@@ -24,35 +22,32 @@
             </div>
         </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
             $(document).on('submit', '#quizForm', function(e) {
-                e.preventDefault(); // Impede o envio padrão do formulário
-
+                e.preventDefault();
+                $('#quizForm button').prop('disabled', true);
                 $.ajax({
                     url: $(this).attr('action'),
                     method: 'POST',
                     data: $(this).serialize(),
                     success: function(response) {
+                        $('#quizForm button').prop('disabled', false);
                         if (response.result) {
-                            $('#resultMessage').text(response.result); // Exibe o resultado da resposta
+                            $('#resultMessage').text(response.result);
                         }
                         if (response.next_question) {
-                                  $('#question-container').html(response.next_question);
+                            $('#question-container').html(response.next_question);
                             $('#quizForm')[0].reset();
                         } else {
-
-                            window.location.href = '{{ route("quiz.result") }}'; 
+                            window.location.replace('{{ route("quiz.result") }}');
                         }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
-                        console.error('Erro:', textStatus, errorThrown); // Log no console
-
-                        $('#resultMessage').html(
-                            'Erro ao processar a resposta. Detalhes: ' + jqXHR.responseText
-                        );
+                        console.error('Erro:', textStatus, errorThrown);
+                        $('#resultMessage').html('Erro ao processar a resposta. Detalhes: ' + jqXHR.responseText);
+                        $('#quizForm button').prop('disabled', false);
                     }
                 });
             });

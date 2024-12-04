@@ -47,7 +47,7 @@ class QuizService
         }
 
         $question = $questions[$currentIndex];
-        $correctAnswer = $question->answers()->where('is_correct', true)->first();
+        $correctAnswer = $question->answers()->where('is_correct', 1)->first();
 
         $isCorrect = $answerId == $correctAnswer->id;
         Session::put('result', $isCorrect ? 'Correto!' : 'Errado!');
