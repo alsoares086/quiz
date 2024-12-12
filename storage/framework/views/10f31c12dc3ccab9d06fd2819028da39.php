@@ -9,7 +9,7 @@
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
      <?php $__env->slot('header', null, []); ?> 
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             <?php echo e(__('Dashboard')); ?>
 
         </h2>
@@ -17,10 +17,38 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <?php echo e(__("You're logged in!")); ?>
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    <div class="flex items-center space-x-6">
+                        <!-- Avatar sem borda arredondada (removido rounded-full) -->
+                        <img src="<?php echo e(asset(auth()->user()->avatar)); ?>" alt="Avatar" class="w-20 h-20 border-4 border-[#6a0dad]">
 
+                        <div class="space-y-4">
+                            <p class="text-lg font-semibold text-[#6a0dad]">Nome: <?php echo e(auth()->user()->name); ?></p>
+                            <p class="text-lg font-medium text-[#6a0dad]">Pontuação: <?php echo e(auth()->user()->pontuacao); ?></p>
+
+                            <!-- Exibindo o Ranking -->
+                            <p class="text-sm text-[#6a0dad]">
+                                Ranking: 
+                                <?php
+                                    $ranking = auth()->user()->pontuacao > 0 
+                                        ? \App\Models\User::orderByDesc('pontuacao')
+                                            ->pluck('id')
+                                            ->search(auth()->user()->id) + 1
+                                        : '#';
+                                ?>
+                                <?php echo e($ranking); ?>
+
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Botão que redireciona para o quiz -->
+                    <div class="mt-6">
+                        <a href="<?php echo e(route('quiz.index')); ?>" class="inline-block bg-[#6a0dad] text-white py-2 px-4 rounded-lg hover:bg-[#5a08a2] transition duration-300">
+                            Iniciar Quiz
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
