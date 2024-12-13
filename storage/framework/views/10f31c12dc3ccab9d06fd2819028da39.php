@@ -19,37 +19,40 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-secondary-light overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 text-gray-900">
-                <div class="flex items-center space-x-6">
-                    <!-- Avatar sem borda arredondada (removido rounded-full) -->
-                    <img src="<?php echo e(asset(auth()->user()->avatar)); ?>" alt="Avatar" class="w-20 h-20">
+            <div class="flex justify-center items-center min-h-screen">
+    <!-- Cartão do Perfil -->
+    <div class="bg-white border-4 border-black shadow-[8px_8px_0px_black] text-center max-w-md p-6">
+        <!-- Avatar com borda pixelada -->
+        <img src="<?php echo e(asset(auth()->user()->avatar)); ?>" alt="Avatar"
+             class="w-32 h-32 mx-auto border-4 border-black shadow-[4px_4px_0px_black]">
 
-                    <div class="space-y-2">
-                        <p class="text-base text-primary-dark">Nome: <?php echo e(auth()->user()->name); ?></p>
-                        <p class="text-base text-primary-dark">Pontuação: <?php echo e(auth()->user()->pontuacao); ?></p>
+        <!-- Informações do Usuário -->
+        <p class="text-lg text-black mt-4">Nome: <?php echo e(auth()->user()->name); ?></p>
+        <p class="text-lg text-black">Pontuação: <?php echo e(auth()->user()->pontuacao); ?></p>
 
-                        <!-- Exibindo o Ranking -->
-                        <p class="text-sm text-primary-dark">
-                            Ranking: 
-                            <?php
-                                $ranking = auth()->user()->pontuacao > 0 
-                                    ? \App\Models\User::orderByDesc('pontuacao')
-                                        ->pluck('id')
-                                        ->search(auth()->user()->id) + 1
-                                    : '#';
-                            ?>
-                            <?php echo e($ranking); ?>
+        <!-- Ranking -->
+        <p class="text-lg text-black">
+            Ranking: 
+            <?php
+                $ranking = auth()->user()->pontuacao > 0 
+                    ? \App\Models\User::orderByDesc('pontuacao')
+                        ->pluck('id')
+                        ->search(auth()->user()->id) + 1
+                    : '#';
+            ?>
+            <?php echo e($ranking); ?>
 
-                        </p>
-                    </div>
-                </div>
+        </p>
 
-                <!-- Botão que redireciona para o quiz -->
-                <div class="mt-6">
-                    <a href="<?php echo e(route('quiz.index')); ?>" class="inline-block bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-dark transition duration-300">
-                        Iniciar Quiz
-                    </a>
-                </div>
-            </div>
+        <!-- Botão START -->
+        <a href="<?php echo e(route('quiz.index')); ?>" 
+           class="inline-block mt-6 px-4 py-2 bg-gray-200 border-4 border-black text-black 
+                  shadow-[4px_4px_0px_black] uppercase hover:translate-x-1 hover:translate-y-1 
+                  hover:shadow-none transition-all duration-150">
+            Start
+        </a>
+    </div>
+</div>
         </div>
     </div>
 </div>

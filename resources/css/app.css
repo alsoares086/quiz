@@ -1,3 +1,32 @@
+/* Este import deve vir primeiro */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* As diretivas do Tailwind devem vir depois do import */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    margin: 0;
+    font-family: 'Press Start 2P', cursive;
+    background-color: #F5C6C0; 
+    color: #121212; 
+    text-align: center;
+}
+
+.header {
+    margin-top: 50px;
+}
+
+.links {
+    margin: 30px;
+}
+
+a {
+    color: #61dafb;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
